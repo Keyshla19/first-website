@@ -1,38 +1,772 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <title>Keyshla - Futura Programadora</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background: linear-gradient(135deg, #0f0f23, #1a1a3d);
-            color: white;
-            margin: 0;
-            padding: 80px 20px;
-        }
-        h1 { font-size: 3.5em; color: #00ffcc; margin-bottom: 20px; }
-        p { font-size: 1.4em; margin: 20px 0; }
-        button {
-            padding: 18px 45px;
-            font-size: 22px;
-            background: #00ffcc;
-            color: black;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            margin-top: 30px;
-        }
-        button:hover { background: #00ccaa; transform: scale(1.05); }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keyshla — Web Developer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            mono: ['Space Mono', 'monospace'],
+            display: ['Syne', 'sans-serif'],
+          },
+          colors: {
+            cyan: {
+              400: '#22d3ee',
+              500: '#06b6d4',
+            },
+          },
+          animation: {
+            'fade-up': 'fadeUp 0.7s ease forwards',
+            'blink': 'blink 1s step-end infinite',
+            'float': 'float 4s ease-in-out infinite',
+            'glow-pulse': 'glowPulse 2.5s ease-in-out infinite',
+          },
+          keyframes: {
+            fadeUp: {
+              '0%': { opacity: '0', transform: 'translateY(30px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            blink: {
+              '0%, 100%': { opacity: '1' },
+              '50%': { opacity: '0' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-14px)' },
+            },
+            glowPulse: {
+              '0%, 100%': { boxShadow: '0 0 10px #22d3ee44, 0 0 30px #22d3ee22' },
+              '50%': { boxShadow: '0 0 20px #22d3ee88, 0 0 60px #22d3ee44' },
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    :root {
+      --cyan: #22d3ee;
+      --bg: #050d12;
+      --surface: #0b1a22;
+      --border: #132330;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: #e2f4f8;
+      font-family: 'Syne', sans-serif;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 4px; }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    /* Grid bg */
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(34,211,238,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34,211,238,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* Glow */
+    .glow { text-shadow: 0 0 20px #22d3ee99, 0 0 40px #22d3ee44; }
+    .glow-border { box-shadow: 0 0 0 1px #22d3ee33, inset 0 0 20px #22d3ee08; }
+    .glow-border:hover { box-shadow: 0 0 0 1px #22d3ee88, inset 0 0 30px #22d3ee12, 0 8px 32px #22d3ee22; }
+
+    /* Cyan underline */
+    .cyan-line {
+      position: relative;
+      display: inline-block;
+    }
+    .cyan-line::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.35s ease;
+    }
+    .cyan-line:hover::after { transform: scaleX(1); }
+
+    /* Nav */
+    nav { backdrop-filter: blur(14px); }
+
+    /* Skill bar */
+    .skill-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #22d3ee, #0891b2);
+      border-radius: 4px;
+      box-shadow: 0 0 10px #22d3ee66;
+      width: 0%;
+      transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* Card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-6px);
+      border-color: #22d3ee55;
+      box-shadow: 0 20px 50px #22d3ee18, 0 0 0 1px #22d3ee33;
+    }
+
+    /* Button */
+    .btn-primary {
+      background: transparent;
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      padding: 0.75rem 1.75rem;
+      position: relative;
+      overflow: hidden;
+      transition: color 0.3s ease;
+    }
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--cyan);
+      transform: translateX(-101%);
+      transition: transform 0.3s ease;
+      z-index: 0;
+    }
+    .btn-primary:hover::before { transform: translateX(0); }
+    .btn-primary:hover { color: #050d12; }
+    .btn-primary span { position: relative; z-index: 1; }
+
+    /* Input */
+    .input-field {
+      background: #0b1a22;
+      border: 1px solid var(--border);
+      color: #e2f4f8;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.85rem;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      outline: none;
+    }
+    .input-field:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px #22d3ee22;
+    }
+
+    /* Animations */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* Rocket */
+    .rocket { animation: float 4s ease-in-out infinite; filter: drop-shadow(0 0 18px #22d3ee88); }
+
+    /* Tag */
+    .tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      background: #0d2535;
+      border: 1px solid #22d3ee33;
+      color: var(--cyan);
+      padding: 2px 10px;
+      border-radius: 2px;
+    }
+
+    /* Mobile nav */
+    #mobile-menu { display: none; }
+    #mobile-menu.open { display: block; }
+
+    /* Section divider */
+    .section-divider {
+      width: 60px;
+      height: 3px;
+      background: var(--cyan);
+      box-shadow: 0 0 12px var(--cyan);
+      margin: 0 auto 2.5rem;
+      border-radius: 2px;
+    }
+
+    /* Success message */
+    .success-msg {
+      display: none;
+      animation: fadeUp 0.5s ease forwards;
+    }
+    .success-msg.show { display: flex; }
+  </style>
 </head>
-<body>
-    <h1>🚀 ¡Hola! Soy Keyshla</h1>
-    <p>Estoy aprendiendo Linux y programación desde la terminal.</p>
-    <p>Este sitio lo creé 100% con comandos.</p>
-    <button onclick="alert('¡Gracias por visitar! Voy a conseguir mi primer trabajo como programadora 💪')">
-        Click aquí para saludar
-    </button>
+<body class="grid-bg min-h-screen">
+
+  <!-- NAV -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-[#050d12cc] border-b border-[#132330]">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="#hero" class="font-mono text-cyan-400 text-lg font-bold tracking-widest glow">&lt;KP/&gt;</a>
+
+      <!-- Desktop nav -->
+      <ul class="hidden md:flex items-center gap-8 font-mono text-sm text-slate-400">
+        <li><a href="#about" class="cyan-line hover:text-cyan-400 transition-colors">about</a></li>
+        <li><a href="#skills" class="cyan-line hover:text-cyan-400 transition-colors">skills</a></li>
+        <li><a href="#projects" class="cyan-line hover:text-cyan-400 transition-colors">projects</a></li>
+        <li><a href="#contact" class="cyan-line hover:text-cyan-400 transition-colors">contact</a></li>
+        <li>
+          <button onclick="downloadResume()" class="btn-primary"><span>resume.pdf</span></button>
+        </li>
+      </ul>
+
+      <!-- Hamburger -->
+      <button id="hamburger" class="md:hidden text-cyan-400" onclick="toggleMenu()">
+        <svg id="icon-open" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+        <svg id="icon-close" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="mobile-menu" class="md:hidden border-t border-[#132330] bg-[#050d12ee]">
+      <ul class="flex flex-col items-center gap-5 py-8 font-mono text-sm text-slate-400">
+        <li><a href="#about" onclick="toggleMenu()" class="hover:text-cyan-400 transition-colors">about</a></li>
+        <li><a href="#skills" onclick="toggleMenu()" class="hover:text-cyan-400 transition-colors">skills</a></li>
+        <li><a href="#projects" onclick="toggleMenu()" class="hover:text-cyan-400 transition-colors">projects</a></li>
+        <li><a href="#contact" onclick="toggleMenu()" class="hover:text-cyan-400 transition-colors">contact</a></li>
+        <li><button onclick="downloadResume(); toggleMenu();" class="btn-primary"><span>resume.pdf</span></button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero" class="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
+
+    <!-- Background glows -->
+    <div class="absolute top-20 left-1/4 w-72 h-72 rounded-full bg-cyan-400 opacity-5 blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-20 right-1/4 w-96 h-96 rounded-full bg-cyan-500 opacity-5 blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+      <!-- Text -->
+      <div>
+        <p class="font-mono text-cyan-400 text-sm tracking-widest mb-4 opacity-0 animate-[fadeUp_0.6s_ease_0.1s_forwards]">
+          &gt; hello, world. i'm —
+        </p>
+        <h1 class="font-display font-extrabold text-5xl sm:text-6xl lg:text-7xl leading-none text-white mb-4 opacity-0 animate-[fadeUp_0.6s_ease_0.3s_forwards]">
+          Keyshla<br/>
+          <span class="text-cyan-400 glow">Hernández</span>
+        </h1>
+        <p class="font-mono text-slate-400 text-base mb-8 max-w-md opacity-0 animate-[fadeUp_0.6s_ease_0.5s_forwards]">
+          Junior Web Developer crafting clean, responsive interfaces and bringing ideas to life — one commit at a time.
+        </p>
+
+        <div class="flex flex-wrap gap-4 opacity-0 animate-[fadeUp_0.6s_ease_0.7s_forwards]">
+          <a href="#projects" class="btn-primary"><span>view my work</span></a>
+          <a href="#contact" class="btn-primary"><span>get in touch</span></a>
+        </div>
+
+        <div class="mt-10 flex gap-6 items-center opacity-0 animate-[fadeUp_0.6s_ease_0.9s_forwards]">
+          <span class="font-mono text-xs text-slate-600 tracking-widest">CURRENTLY OPEN TO WORK</span>
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+        </div>
+      </div>
+
+      <!-- Rocket Illustration -->
+      <div class="flex justify-center items-center">
+        <div class="rocket">
+          <svg width="280" height="340" viewBox="0 0 280 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Glow ring -->
+            <circle cx="140" cy="220" r="70" fill="#22d3ee" opacity="0.06"/>
+            <circle cx="140" cy="220" r="50" fill="#22d3ee" opacity="0.06"/>
+
+            <!-- Rocket body -->
+            <path d="M140 30 C140 30 175 80 185 160 L140 170 L95 160 C105 80 140 30 140 30Z" fill="#0b1a22" stroke="#22d3ee" stroke-width="1.5"/>
+
+            <!-- Window -->
+            <circle cx="140" cy="120" r="22" fill="#0b1a22" stroke="#22d3ee" stroke-width="2"/>
+            <circle cx="140" cy="120" r="14" fill="#22d3ee" opacity="0.15"/>
+            <circle cx="140" cy="120" r="8" fill="#22d3ee" opacity="0.3"/>
+
+            <!-- Left fin -->
+            <path d="M95 160 L60 210 L95 195Z" fill="#0d2535" stroke="#22d3ee" stroke-width="1.5"/>
+            <!-- Right fin -->
+            <path d="M185 160 L220 210 L185 195Z" fill="#0d2535" stroke="#22d3ee" stroke-width="1.5"/>
+
+            <!-- Body bottom -->
+            <path d="M95 195 Q95 230 140 235 Q185 230 185 195 L185 160 L95 160Z" fill="#0b1a22" stroke="#22d3ee" stroke-width="1.5"/>
+
+            <!-- Stripe detail -->
+            <line x1="105" y1="175" x2="175" y2="175" stroke="#22d3ee" stroke-width="0.5" opacity="0.4"/>
+            <line x1="100" y1="190" x2="180" y2="190" stroke="#22d3ee" stroke-width="0.5" opacity="0.4"/>
+
+            <!-- Nozzle -->
+            <rect x="120" y="233" width="40" height="14" rx="4" fill="#0d2535" stroke="#22d3ee" stroke-width="1.5"/>
+
+            <!-- Flame outer -->
+            <path d="M118 247 Q110 280 140 300 Q170 280 162 247Z" fill="#22d3ee" opacity="0.25"/>
+            <!-- Flame mid -->
+            <path d="M124 247 Q118 272 140 288 Q162 272 156 247Z" fill="#22d3ee" opacity="0.4"/>
+            <!-- Flame inner -->
+            <path d="M130 247 Q128 265 140 275 Q152 265 150 247Z" fill="#22d3ee" opacity="0.7"/>
+
+            <!-- Stars -->
+            <circle cx="50" cy="60" r="1.5" fill="#22d3ee" opacity="0.7"/>
+            <circle cx="230" cy="90" r="1" fill="#22d3ee" opacity="0.5"/>
+            <circle cx="30" cy="150" r="1" fill="#22d3ee" opacity="0.6"/>
+            <circle cx="255" cy="160" r="1.5" fill="#22d3ee" opacity="0.4"/>
+            <circle cx="70" cy="260" r="1" fill="#22d3ee" opacity="0.5"/>
+            <circle cx="210" cy="250" r="1" fill="#22d3ee" opacity="0.6"/>
+            <circle cx="20" cy="300" r="1.5" fill="#22d3ee" opacity="0.3"/>
+            <circle cx="260" cy="290" r="1" fill="#22d3ee" opacity="0.4"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll hint -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
+      <span class="font-mono text-xs text-slate-500 tracking-widest">scroll</span>
+      <div class="w-px h-10 bg-gradient-to-b from-cyan-400 to-transparent"></div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="py-28 px-6">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-16 reveal">
+        <p class="font-mono text-cyan-400 text-sm tracking-widest mb-2">01. about_me</p>
+        <h2 class="font-display font-bold text-4xl text-white">Who I Am</h2>
+        <div class="section-divider mt-4"></div>
+      </div>
+
+      <div class="grid md:grid-cols-5 gap-12 items-center">
+        <!-- Avatar -->
+        <div class="md:col-span-2 flex justify-center reveal">
+          <div class="relative">
+            <div class="w-56 h-56 rounded-sm bg-[#0d2535] border border-[#22d3ee33] flex items-center justify-center overflow-hidden glow-border animate-[glowPulse_2.5s_ease-in-out_infinite]">
+              <svg viewBox="0 0 200 200" class="w-48 h-48 opacity-80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="75" r="38" fill="#0d2535" stroke="#22d3ee" stroke-width="1.5"/>
+                <circle cx="100" cy="75" r="25" fill="#22d3ee" opacity="0.15"/>
+                <!-- Face -->
+                <circle cx="88" cy="72" r="4" fill="#22d3ee" opacity="0.6"/>
+                <circle cx="112" cy="72" r="4" fill="#22d3ee" opacity="0.6"/>
+                <path d="M88 90 Q100 100 112 90" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" opacity="0.6" fill="none"/>
+                <!-- Body -->
+                <path d="M55 165 Q55 120 100 115 Q145 120 145 165Z" fill="#0d2535" stroke="#22d3ee" stroke-width="1.5"/>
+                <path d="M75 115 Q75 140 55 155" stroke="#22d3ee" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M125 115 Q125 140 145 155" stroke="#22d3ee" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <!-- Corner accents -->
+            <div class="absolute -top-2 -right-2 w-4 h-4 border-t-2 border-r-2 border-cyan-400"></div>
+            <div class="absolute -bottom-2 -left-2 w-4 h-4 border-b-2 border-l-2 border-cyan-400"></div>
+          </div>
+        </div>
+
+        <!-- Text -->
+        <div class="md:col-span-3 reveal">
+          <p class="text-slate-300 text-lg leading-relaxed mb-6">
+            I'm <span class="text-cyan-400 font-semibold">Keyshla</span>, a passionate junior web developer based in Puerto Rico. I love turning complex problems into elegant, pixel-perfect experiences on the web.
+          </p>
+          <p class="text-slate-400 leading-relaxed mb-8">
+            I build responsive, accessible, and performant applications using modern web technologies. When I'm not coding, I'm exploring design systems, contributing to open source, or leveling up my skills through side projects.
+          </p>
+          <div class="grid grid-cols-2 gap-4 font-mono text-sm">
+            <div class="flex items-center gap-3">
+              <span class="text-cyan-400">▹</span>
+              <span class="text-slate-400">JavaScript / TypeScript</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-cyan-400">▹</span>
+              <span class="text-slate-400">React / Next.js</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-cyan-400">▹</span>
+              <span class="text-slate-400">HTML5 / CSS3</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-cyan-400">▹</span>
+              <span class="text-slate-400">Tailwind CSS</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-cyan-400">▹</span>
+              <span class="text-slate-400">Node.js</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-cyan-400">▹</span>
+              <span class="text-slate-400">Git / GitHub</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills" class="py-28 px-6 relative">
+    <div class="absolute inset-0 bg-[#0b1a22] opacity-40 pointer-events-none"></div>
+    <div class="max-w-5xl mx-auto relative z-10">
+      <div class="text-center mb-16 reveal">
+        <p class="font-mono text-cyan-400 text-sm tracking-widest mb-2">02. skills</p>
+        <h2 class="font-display font-bold text-4xl text-white">Tech Stack</h2>
+        <div class="section-divider mt-4"></div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-10 mb-16 reveal">
+        <!-- Skill bars -->
+        <div class="space-y-6">
+          <h3 class="font-mono text-cyan-400 text-xs tracking-widest mb-6 uppercase">Proficiency</h3>
+          <div class="skill-item">
+            <div class="flex justify-between font-mono text-xs text-slate-400 mb-2">
+              <span>HTML / CSS</span><span class="text-cyan-400">92%</span>
+            </div>
+            <div class="h-1.5 bg-[#132330] rounded-full">
+              <div class="skill-bar-fill rounded-full" data-width="92"></div>
+            </div>
+          </div>
+          <div class="skill-item">
+            <div class="flex justify-between font-mono text-xs text-slate-400 mb-2">
+              <span>JavaScript</span><span class="text-cyan-400">82%</span>
+            </div>
+            <div class="h-1.5 bg-[#132330] rounded-full">
+              <div class="skill-bar-fill rounded-full" data-width="82"></div>
+            </div>
+          </div>
+          <div class="skill-item">
+            <div class="flex justify-between font-mono text-xs text-slate-400 mb-2">
+              <span>React</span><span class="text-cyan-400">74%</span>
+            </div>
+            <div class="h-1.5 bg-[#132330] rounded-full">
+              <div class="skill-bar-fill rounded-full" data-width="74"></div>
+            </div>
+          </div>
+          <div class="skill-item">
+            <div class="flex justify-between font-mono text-xs text-slate-400 mb-2">
+              <span>Node.js</span><span class="text-cyan-400">65%</span>
+            </div>
+            <div class="h-1.5 bg-[#132330] rounded-full">
+              <div class="skill-bar-fill rounded-full" data-width="65"></div>
+            </div>
+          </div>
+          <div class="skill-item">
+            <div class="flex justify-between font-mono text-xs text-slate-400 mb-2">
+              <span>TypeScript</span><span class="text-cyan-400">58%</span>
+            </div>
+            <div class="h-1.5 bg-[#132330] rounded-full">
+              <div class="skill-bar-fill rounded-full" data-width="58"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Icon grid -->
+        <div>
+          <h3 class="font-mono text-cyan-400 text-xs tracking-widest mb-6 uppercase">Tools & Technologies</h3>
+          <div class="grid grid-cols-3 gap-4">
+            <!-- Tool cards -->
+            <div class="card rounded-sm p-4 flex flex-col items-center gap-2 cursor-default">
+              <svg class="w-8 h-8" viewBox="0 0 24 24" fill="#e34c26"><path d="M1.5 0h21l-1.91 21.563L11.977 24l-8.564-2.438L1.5 0zm7.031 9.75l-.232-2.718 10.059.003.23-2.622L5.412 4.41l.698 8.01h9.126l-.326 3.426-2.91.804-2.955-.81-.188-2.11H6.248l.33 4.171L12 19.351l5.379-1.443.744-8.157H8.531z"/></svg>
+              <span class="font-mono text-xs text-slate-400">HTML5</span>
+            </div>
+            <div class="card rounded-sm p-4 flex flex-col items-center gap-2 cursor-default">
+              <svg class="w-8 h-8" viewBox="0 0 24 24" fill="#264de4"><path d="M1.5 0h21l-1.91 21.563L11.977 24l-8.565-2.438L1.5 0zm17.09 4.413L5.41 4.41l.213 2.622 10.125.002-.255 2.716h-6.64l.24 2.573h6.182l-.366 3.523-2.91.804-2.956-.81-.188-2.11h-2.61l.29 3.855L12 19.288l5.373-1.53L18.59 4.414z"/></svg>
+              <span class="font-mono text-xs text-slate-400">CSS3</span>
+            </div>
+            <div class="card rounded-sm p-4 flex flex-col items-center gap-2 cursor-default">
+              <svg class="w-8 h-8" viewBox="0 0 24 24" fill="#f7df1e"><rect width="24" height="24" rx="2" fill="#f7df1e"/><path d="M6.44 16.888l1.96-1.185c.377.667.72 1.231 1.545 1.231.79 0 1.287-.308 1.287-1.506V8.502h2.41v6.955c0 2.484-1.456 3.613-3.582 3.613-1.919 0-3.03-1-3.62-2.182zm8.237-.206l1.96-1.15c.514.847 1.183 1.47 2.36 1.47 1 0 1.626-.498 1.626-1.185 0-.822-.65-1.113-1.743-1.59l-.6-.257c-1.725-.734-2.872-1.654-2.872-3.6 0-1.79 1.363-3.154 3.495-3.154 1.518 0 2.61.527 3.393 1.91l-1.858 1.19c-.41-.734-.85-1.022-1.536-1.022-.7 0-1.142.444-1.142 1.022 0 .717.443 1.008 1.468 1.454l.6.258c2.032.87 3.18 1.756 3.18 3.747 0 2.148-1.687 3.33-3.952 3.33-2.212 0-3.644-1.053-4.338-2.423z"/></svg>
+              <span class="font-mono text-xs text-slate-400">JavaScript</span>
+            </div>
+            <div class="card rounded-sm p-4 flex flex-col items-center gap-2 cursor-default">
+              <svg class="w-8 h-8" viewBox="0 0 24 24" fill="#61dafb"><circle cx="12" cy="12" r="2.5" fill="#61dafb"/><ellipse cx="12" cy="12" rx="11" ry="4.2" stroke="#61dafb" stroke-width="1.2" fill="none"/><ellipse cx="12" cy="12" rx="11" ry="4.2" stroke="#61dafb" stroke-width="1.2" fill="none" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="11" ry="4.2" stroke="#61dafb" stroke-width="1.2" fill="none" transform="rotate(120 12 12)"/></svg>
+              <span class="font-mono text-xs text-slate-400">React</span>
+            </div>
+            <div class="card rounded-sm p-4 flex flex-col items-center gap-2 cursor-default">
+              <svg class="w-8 h-8" viewBox="0 0 24 24"><path d="M11.572 0c-.176 0-.31.001-.358.007a19.76 19.76 0 01-.364.033C7.443.346 4.25 2.185 2.228 5.012a11.875 11.875 0 00-2.119 5.243c-.096.659-.108.854-.108 1.747s.012 1.089.108 1.748c.652 4.506 3.86 8.292 8.209 9.695.779.25 1.6.422 2.534.525.363.04 1.935.04 2.299 0 1.611-.178 2.977-.577 4.323-1.264.207-.106.247-.134.219-.158-.02-.013-.9-1.193-1.955-2.62l-1.919-2.592-2.404-3.558a338.739 338.739 0 00-2.422-3.556c-.009-.002-.018 1.579-.023 3.51-.007 3.38-.01 3.515-.052 3.595a.426.426 0 01-.206.214c-.075.037-.14.044-.495.044H7.81l-.108-.068a.438.438 0 01-.157-.171l-.05-.106.006-4.703.007-4.705.072-.092a.645.645 0 01.174-.143c.096-.047.134-.051.54-.051.478 0 .558.018.682.154.035.038 1.337 1.999 2.895 4.361a10760.433 10760.433 0 004.735 7.17l1.9 2.879.096-.063a12.317 12.317 0 002.466-2.163 11.944 11.944 0 002.824-6.134c.096-.66.108-.854.108-1.748 0-.893-.012-1.088-.108-1.747-.652-4.506-3.859-8.292-8.208-9.695a12.597 12.597 0 00-2.499-.523A33.119 33.119 0 0011.573 0zm4.069 7.217c.347 0 .408.005.486.047a.473.473 0 01.237.277c.018.06.023 1.365.018 4.304l-.006 4.218-.744-1.14-.746-1.14v-3.066c0-1.982.01-3.097.023-3.15a.478.478 0 01.233-.296c.096-.05.14-.056.499-.056z" fill="#ffffff"/></svg>
+              <span class="font-mono text-xs text-slate-400">Next.js</span>
+            </div>
+            <div class="card rounded-sm p-4 flex flex-col items-center gap-2 cursor-default">
+              <svg class="w-8 h-8" viewBox="0 0 24 24" fill="#3178c6"><path d="M1.125 0C.502 0 0 .502 0 1.125v21.75C0 23.498.502 24 1.125 24h21.75c.623 0 1.125-.502 1.125-1.125V1.125C24 .502 23.498 0 22.875 0zm17.363 9.75c.612 0 1.154.037 1.627.111a6.38 6.38 0 011.306.34v2.458a3.95 3.95 0 00-.643-.361 5.093 5.093 0 00-.717-.26 5.453 5.453 0 00-1.426-.2c-.3 0-.573.028-.819.086a2.1 2.1 0 00-.623.242c-.17.104-.3.229-.393.374a.888.888 0 00-.14.49c0 .196.053.373.156.529.104.156.252.304.443.444s.423.276.696.41c.273.135.582.274.926.416.47.197.892.407 1.266.628.374.222.695.473.963.753.268.279.472.598.614.957.142.359.214.776.214 1.253 0 .657-.125 1.21-.373 1.656a3.033 3.033 0 01-1.012 1.085 4.38 4.38 0 01-1.487.596c-.566.12-1.163.18-1.79.18a9.916 9.916 0 01-1.84-.164 5.544 5.544 0 01-1.512-.493v-2.63a5.033 5.033 0 003.237 1.2c.333 0 .624-.03.872-.09.249-.06.456-.144.623-.25.166-.108.29-.234.373-.38a1.023 1.023 0 00-.074-1.089 2.12 2.12 0 00-.537-.5 5.597 5.597 0 00-.807-.444 27.72 27.72 0 00-1.007-.436c-.918-.383-1.602-.852-2.053-1.405-.45-.553-.676-1.222-.676-2.005 0-.614.123-1.141.369-1.582.246-.441.58-.804 1.004-1.089a4.494 4.494 0 011.47-.629 7.536 7.536 0 011.77-.201zm-15.113.188h9.563v2.166H9.506v9.646H6.789v-9.646H3.375z"/></svg>
+              <span class="font-mono text-xs text-slate-400">TypeScript</span>
+            </div>
+            <div class="card rounded-sm p-4 flex flex-col items-center gap-2 cursor-default">
+              <svg class="w-8 h-8" viewBox="0 0 24 24" fill="#339933"><path d="M11.998 24c-.321 0-.641-.084-.922-.247l-2.936-1.737c-.438-.245-.224-.332-.08-.383.585-.203.703-.25 1.328-.604.065-.037.151-.023.218.017l2.256 1.339c.082.045.198.045.275 0l8.795-5.076c.082-.047.134-.141.134-.238V6.921c0-.099-.053-.19-.137-.241l-8.791-5.072c-.081-.047-.189-.047-.271 0L3.075 6.68c-.085.05-.139.143-.139.241v10.15c0 .097.054.189.137.236l2.408 1.389c1.307.654 2.108-.116 2.108-.89V7.787c0-.142.114-.253.256-.253h1.115c.139 0 .255.111.255.253v10.021c0 1.745-.95 2.745-2.604 2.745-.508 0-.909 0-2.026-.551L2.28 18.675c-.57-.329-.922-.943-.922-1.604V6.921c0-.661.352-1.275.922-1.603l8.795-5.082c.557-.315 1.296-.315 1.848 0l8.794 5.082c.57.329.924.943.924 1.603v10.15c0 .661-.354 1.275-.924 1.604l-8.794 5.076c-.28.161-.601.247-.925.247zm2.718-6.975c-3.855 0-4.663-1.769-4.663-3.253 0-.142.115-.253.257-.253h1.137c.127 0 .234.091.252.217.172 1.159.683 1.744 3.018 1.744 1.858 0 2.649-.421 2.649-1.408 0-.569-.225-.993-3.124-1.278-2.422-.24-3.923-.773-3.923-2.708 0-1.784 1.503-2.845 4.023-2.845 2.829 0 4.231.982 4.405 3.094.006.073-.017.142-.066.195a.252.252 0 01-.188.083h-1.14a.253.253 0 01-.247-.199c-.276-1.224-.944-1.617-2.763-1.617-2.036 0-2.271.708-2.271 1.239 0 .644.28.832 3.029 1.195 2.719.36 4.015.87 4.015 2.781-.002 1.929-1.609 3.012-4.42 3.012z"/></svg>
+              <span class="font-mono text-xs text-slate-400">Node.js</span>
+            </div>
+            <div class="card rounded-sm p-4 flex flex-col items-center gap-2 cursor-default">
+              <svg class="w-8 h-8" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" fill="#ffffff"/></svg>
+              <span class="font-mono text-xs text-slate-400">GitHub</span>
+            </div>
+            <div class="card rounded-sm p-4 flex flex-col items-center gap-2 cursor-default">
+              <svg class="w-8 h-8" viewBox="0 0 24 24" fill="#06b6d4"><path d="M12.001 4.8c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C13.666 10.618 15.027 12 18.001 12c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C16.337 6.182 14.976 4.8 12.001 4.8zm-6 7.2c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624 1.177 1.194 2.538 2.576 5.512 2.576 3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C10.337 13.382 8.976 12 6.001 12z"/></svg>
+              <span class="font-mono text-xs text-slate-400">Tailwind</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects" class="py-28 px-6">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-16 reveal">
+        <p class="font-mono text-cyan-400 text-sm tracking-widest mb-2">03. projects</p>
+        <h2 class="font-display font-bold text-4xl text-white">What I've Built</h2>
+        <div class="section-divider mt-4"></div>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+
+        <!-- Project 1 -->
+        <div class="card rounded-sm p-6 flex flex-col reveal" style="transition-delay: 0s">
+          <div class="flex items-center justify-between mb-6">
+            <svg class="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+            </svg>
+            <div class="flex gap-3">
+              <a href="#" class="text-slate-500 hover:text-cyan-400 transition-colors">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+              </a>
+              <a href="#" class="text-slate-500 hover:text-cyan-400 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </a>
+            </div>
+          </div>
+          <h3 class="font-display font-bold text-xl text-white mb-3">TaskFlow App</h3>
+          <p class="text-slate-400 text-sm leading-relaxed flex-1 mb-6">
+            A full-stack task management app with real-time updates, drag-and-drop boards, and user authentication. Built for productivity teams.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <span class="tag">React</span>
+            <span class="tag">Node.js</span>
+            <span class="tag">MongoDB</span>
+          </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="card rounded-sm p-6 flex flex-col reveal" style="transition-delay: 0.1s">
+          <div class="flex items-center justify-between mb-6">
+            <svg class="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            <div class="flex gap-3">
+              <a href="#" class="text-slate-500 hover:text-cyan-400 transition-colors">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+              </a>
+              <a href="#" class="text-slate-500 hover:text-cyan-400 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </a>
+            </div>
+          </div>
+          <h3 class="font-display font-bold text-xl text-white mb-3">DevPortfolio UI</h3>
+          <p class="text-slate-400 text-sm leading-relaxed flex-1 mb-6">
+            A component library and design system for developer portfolios. Includes dark mode, theming, and a Storybook-powered documentation site.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <span class="tag">Next.js</span>
+            <span class="tag">TypeScript</span>
+            <span class="tag">Tailwind</span>
+          </div>
+        </div>
+
+        <!-- Project 3 -->
+        <div class="card rounded-sm p-6 flex flex-col reveal" style="transition-delay: 0.2s">
+          <div class="flex items-center justify-between mb-6">
+            <svg class="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <div class="flex gap-3">
+              <a href="#" class="text-slate-500 hover:text-cyan-400 transition-colors">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+              </a>
+              <a href="#" class="text-slate-500 hover:text-cyan-400 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              </a>
+            </div>
+          </div>
+          <h3 class="font-display font-bold text-xl text-white mb-3">CryptoTracker</h3>
+          <p class="text-slate-400 text-sm leading-relaxed flex-1 mb-6">
+            Real-time cryptocurrency dashboard with live price tracking, historical charts, portfolio management, and price alert notifications.
+          </p>
+          <div class="flex flex-wrap gap-2">
+            <span class="tag">React</span>
+            <span class="tag">REST API</span>
+            <span class="tag">Chart.js</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="py-28 px-6 relative">
+    <div class="absolute inset-0 bg-[#0b1a22] opacity-40 pointer-events-none"></div>
+    <div class="max-w-2xl mx-auto relative z-10">
+      <div class="text-center mb-16 reveal">
+        <p class="font-mono text-cyan-400 text-sm tracking-widest mb-2">04. contact</p>
+        <h2 class="font-display font-bold text-4xl text-white">Get In Touch</h2>
+        <div class="section-divider mt-4"></div>
+        <p class="text-slate-400 mt-4 max-w-md mx-auto">
+          I'm currently open to new opportunities. Whether you have a project in mind or just want to say hi — my inbox is always open.
+        </p>
+      </div>
+
+      <div class="card rounded-sm p-8 reveal glow-border">
+        <!-- Form -->
+        <div id="contact-form">
+          <div class="grid sm:grid-cols-2 gap-5 mb-5">
+            <div>
+              <label class="font-mono text-xs text-slate-500 tracking-widest block mb-2">NAME</label>
+              <input type="text" id="name" placeholder="Keyshla Hernández" class="input-field w-full px-4 py-3 rounded-sm" />
+            </div>
+            <div>
+              <label class="font-mono text-xs text-slate-500 tracking-widest block mb-2">EMAIL</label>
+              <input type="email" id="email" placeholder="keyshla@email.com" class="input-field w-full px-4 py-3 rounded-sm" />
+            </div>
+          </div>
+          <div class="mb-5">
+            <label class="font-mono text-xs text-slate-500 tracking-widest block mb-2">SUBJECT</label>
+            <input type="text" id="subject" placeholder="Let's work together!" class="input-field w-full px-4 py-3 rounded-sm" />
+          </div>
+          <div class="mb-7">
+            <label class="font-mono text-xs text-slate-500 tracking-widest block mb-2">MESSAGE</label>
+            <textarea id="message" rows="5" placeholder="Tell me about your project..." class="input-field w-full px-4 py-3 rounded-sm resize-none"></textarea>
+          </div>
+          <button onclick="submitForm()" class="btn-primary w-full text-center"><span>send_message.exe</span></button>
+        </div>
+
+        <!-- Success -->
+        <div id="success-msg" class="success-msg flex-col items-center justify-center py-12 gap-4">
+          <div class="w-16 h-16 rounded-full border-2 border-cyan-400 flex items-center justify-center mb-2 animate-[glowPulse_2.5s_ease-in-out_infinite]">
+            <svg class="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+          </div>
+          <h3 class="font-display font-bold text-2xl text-white">Message Sent!</h3>
+          <p class="font-mono text-sm text-slate-400 text-center">Thanks for reaching out. I'll get back to you soon.</p>
+          <button onclick="resetForm()" class="btn-primary mt-4"><span>send another</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="py-10 px-6 border-t border-[#132330]">
+    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <span class="font-mono text-cyan-400 text-sm font-bold tracking-widest glow">&lt;KP/&gt;</span>
+      <p class="font-mono text-xs text-slate-600 text-center">
+        Designed & Built by <span class="text-cyan-400">Keyshla Hernández</span> — 2025
+      </p>
+      <a href="https://github.com" target="_blank" rel="noopener" class="flex items-center gap-2 font-mono text-xs text-slate-500 hover:text-cyan-400 transition-colors group">
+        <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+        github.com/keyshla-h
+      </a>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    function toggleMenu() {
+      const menu = document.getElementById('mobile-menu');
+      const iconOpen = document.getElementById('icon-open');
+      const iconClose = document.getElementById('icon-close');
+      menu.classList.toggle('open');
+      iconOpen.classList.toggle('hidden');
+      iconClose.classList.toggle('hidden');
+    }
+
+    // Download resume
+    function downloadResume() {
+      alert('📄 Resume download coming soon!\n\nThanks for your interest in my work.');
+    }
+
+    // Contact form
+    function submitForm() {
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const message = document.getElementById('message').value.trim();
+
+      if (!name || !email || !message) {
+        // Shake effect
+        const form = document.getElementById('contact-form');
+        form.style.transform = 'translateX(-6px)';
+        setTimeout(() => form.style.transform = 'translateX(6px)', 80);
+        setTimeout(() => form.style.transform = 'translateX(-4px)', 160);
+        setTimeout(() => form.style.transform = 'translateX(0)', 240);
+        return;
+      }
+
+      document.getElementById('contact-form').style.display = 'none';
+      document.getElementById('success-msg').classList.add('show');
+    }
+
+    function resetForm() {
+      document.getElementById('name').value = '';
+      document.getElementById('email').value = '';
+      document.getElementById('subject').value = '';
+      document.getElementById('message').value = '';
+      document.getElementById('success-msg').classList.remove('show');
+      document.getElementById('contact-form').style.display = 'block';
+    }
+
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.12 });
+    reveals.forEach(el => observer.observe(el));
+
+    // Skill bars
+    const skillObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.querySelectorAll('.skill-bar-fill').forEach(bar => {
+            const width = bar.getAttribute('data-width');
+            bar.style.width = width + '%';
+          });
+        }
+      });
+    }, { threshold: 0.3 });
+    document.querySelectorAll('#skills').forEach(el => skillObserver.observe(el));
+
+    // Active nav highlight on scroll
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('nav a[href^="#"]');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(s => {
+        if (window.scrollY >= s.offsetTop - 120) current = s.id;
+      });
+      navLinks.forEach(link => {
+        link.classList.remove('text-cyan-400');
+        if (link.getAttribute('href') === '#' + current) {
+          link.classList.add('text-cyan-400');
+        }
+      });
+    });
+  </script>
 </body>
 </html>
